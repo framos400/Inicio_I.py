@@ -1,52 +1,53 @@
-theme: jekyll-theme-minimal
+from flask import Flask, render_template, jsonify
+
+app = Flask(__name__)
+
+# Classes básicas
 class Estado:
-    def __init__(self, nome, população, recursos_naturais, cultura, setores_econômicos, infraestrutura, transporte, energia, comunicação, densidade_populacional, taxa_crescimento, história, aspectos_sociais, economia_local, desafios_locais):
+    def __init__(self, nome, populacao, recursos_naturais):
         self.nome = nome
-        # Outros atributos...
+        self.populacao = populacao
+        self.recursos_naturais = recursos_naturais
 
-class Município:
-    def __init__(self, nome, população, economia, cultura, infraestrutura):
+    def simular_crescimento_populacional(self, taxa_crescimento):
+        self.populacao = int(self.populacao * (1 + taxa_crescimento))
+
+class Municipio:
+    def __init__(self, nome, populacao, economia):
         self.nome = nome
-        # Outros atributos...
+        self.populacao = populacao
+        self.economia = economia
 
-# Exemplo de criação de um estado
-sao_paulo = Estado(
-    "São Paulo", 45000000, # Outros atributos...
-)
+# Criando dados fictícios
+sao_paulo = Estado("São Paulo", 45000000, ["Minérios", "Água"])
+fortaleza = Estado("Fortaleza", 2687000, ["Petróleo", "Turismo"])
 
-# Exemplo de criação de um município
-sao_paulo_cidade = Município(
-    "São Paulo", 12300000, # Outros atributos...
-)
+municipios = [
+    Municipio("São Paulo - Capital", 12300000, "Indústria e Serviços"),
+    Municipio("Fortaleza - Capital", 2687000, "Turismo e Comércio"),
+]
 
-class Estado:
-    def __init__(self, nome, população, recursos_naturais, cultura, setores_econômicos, infraestrutura, transporte, energia, comunicação, densidade_populacional, taxa_crescimento, história, aspectos_sociais, economia_local, desafios_locais):
-        self.nome = nome
-        # Outros atributos...
+@app.route('/')
+def home():
+    return render_template('index.html')
 
-class Município:
-    def __init__(self, nome, população, economia, cultura, infraestrutura):
-        self.nome = nome
-        # Outros atributos...
+@app.route('/simular', methods=['GET'])
+def simular():
+    # Simula crescimento populacional em 1%
+    sao_paulo.simular_crescimento_populacional(0.01)
+    fortaleza.simular_crescimento_populacional(0.02)
 
-# Exemplo de criação de um estado
-sao_paulo = Estado(
-    "São Paulo", 45000000, # Outros atributos...
-)
+    resultados = {
+        "estados": [
+            {"nome": sao_paulo.nome, "populacao": sao_paulo.populacao, "recursos": sao_paulo.recursos_naturais},
+            {"nome": fortaleza.nome, "populacao": fortaleza.populacao, "recursos": fortaleza.recursos_naturais},
+        ],
+        "municipios": [
+            {"nome": m.nome, "populacao": m.populacao, "economia": m.economia} for m in municipios
+        ]
+    }
 
-# Exemplo de criação de um município
-sao_paulo_cidade = Município(
-    "São Paulo", 12300000, # Outros atributos...
-)
-def simular_crescimento_populacional(estado, taxa_crescimento):
-     estado.população *= (1 + taxa_crescimento)
-def simular_comercio(municipio1, municipio2):
-     # Simulação de troca econômica
-     pass
-class País:
-     def __init__(self, nome):
-         self.nome = nome
-         self.estados = []
-     
-     def adicionar_estado(self, estado):
-         self.estados.append(estado)
+    return jsonify(resultados)
+
+if __name__ == "__main__":
+    app.run(debug=True)
