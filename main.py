@@ -1,3 +1,4 @@
+theme: jekyll-theme-minimal
 class Estado:
     def __init__(self, nome, população, recursos_naturais, cultura, setores_econômicos, infraestrutura, transporte, energia, comunicação, densidade_populacional, taxa_crescimento, história, aspectos_sociais, economia_local, desafios_locais):
         self.nome = nome
