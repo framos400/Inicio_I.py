@@ -25,12 +25,12 @@ function iniciarSimulacao() {
         }
     ];
 
-    // Atualizar a população dos estados (simulação de crescimento)
+    // Simula crescimento populacional
     estados.forEach(estado => {
         estado.populacao = Math.round(estado.populacao * 1.01); // Crescimento de 1%
     });
 
-    // Mostrar os resultados na página
+    // Exibe resultados
     const resultados = document.getElementById("resultados");
     resultados.innerHTML = "<h2>Resultados da Simulação</h2>";
 
