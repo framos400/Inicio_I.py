@@ -6,8 +6,29 @@
     <title>Simulação</title>
     <link rel="stylesheet" href="/static/style.css">
     <script>
-        function iniciarSimulacao() {
-            alert("A simulação foi iniciada! Confira os resultados no console.");
+        async function iniciarSimulacao() {
+            const response = await fetch('/simular');
+            const data = await response.json();
+            const resultados = document.getElementById('resultados');
+
+            resultados.innerHTML = "<h2>Resultados da Simulação</h2>";
+            data.estados.forEach(estado => {
+                resultados.innerHTML += `
+                    <p><strong>Estado:</strong> ${estado.nome}</p>
+                    <p><strong>População:</strong> ${estado.populacao}</p>
+                    <p><strong>Recursos:</strong> ${estado.recursos.join(", ")}</p>
+                    <hr>
+                `;
+            });
+
+            data.municipios.forEach(municipio => {
+                resultados.innerHTML += `
+                    <p><strong>Município:</strong> ${municipio.nome}</p>
+                    <p><strong>População:</strong> ${municipio.populacao}</p>
+                    <p><strong>Economia:</strong> ${municipio.economia}</p>
+                    <hr>
+                `;
+            });
         }
     </script>
 </head>
