@@ -1,16 +1,12 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
-# Classes básicas
 class Estado:
-    def __init__(self, nome, populacao, recursos_naturais):
+    def __init__(self, nome, populacao, recursos):
         self.nome = nome
         self.populacao = populacao
-        self.recursos_naturais = recursos_naturais
-
-    def simular_crescimento_populacional(self, taxa_crescimento):
-        self.populacao = int(self.populacao * (1 + taxa_crescimento))
+        self.recursos = recursos
 
 class Municipio:
     def __init__(self, nome, populacao, economia):
@@ -18,35 +14,30 @@ class Municipio:
         self.populacao = populacao
         self.economia = economia
 
-# Criando dados fictícios
-sao_paulo = Estado("São Paulo", 45000000, ["Minérios", "Água"])
-fortaleza = Estado("Fortaleza", 2687000, ["Petróleo", "Turismo"])
+# Dados fictícios
+sao_paulo = Estado("São Paulo", 45000000, ["Água", "Minérios"])
+fortaleza = Estado("Fortaleza", 2687000, ["Turismo", "Petróleo"])
 
 municipios = [
-    Municipio("São Paulo - Capital", 12300000, "Indústria e Serviços"),
-    Municipio("Fortaleza - Capital", 2687000, "Turismo e Comércio"),
+    Municipio("São Paulo - Capital", 12300000, "Indústria"),
+    Municipio("Fortaleza - Capital", 2687000, "Turismo"),
 ]
-
-@app.route('/')
-def home():
-    return render_template('index.html')
 
 @app.route('/simular', methods=['GET'])
 def simular():
-    # Simula crescimento populacional em 1%
-    sao_paulo.simular_crescimento_populacional(0.01)
-    fortaleza.simular_crescimento_populacional(0.02)
+    # Exemplo de simulação: aumentar população em 1%
+    sao_paulo.populacao = int(sao_paulo.populacao * 1.01)
+    fortaleza.populacao = int(fortaleza.populacao * 1.02)
 
     resultados = {
         "estados": [
-            {"nome": sao_paulo.nome, "populacao": sao_paulo.populacao, "recursos": sao_paulo.recursos_naturais},
-            {"nome": fortaleza.nome, "populacao": fortaleza.populacao, "recursos": fortaleza.recursos_naturais},
+            {"nome": sao_paulo.nome, "populacao": sao_paulo.populacao, "recursos": sao_paulo.recursos},
+            {"nome": fortaleza.nome, "populacao": fortaleza.populacao, "recursos": fortaleza.recursos},
         ],
         "municipios": [
             {"nome": m.nome, "populacao": m.populacao, "economia": m.economia} for m in municipios
         ]
     }
-
     return jsonify(resultados)
 
 if __name__ == "__main__":
